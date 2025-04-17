@@ -74,6 +74,9 @@ export const insertGameRoundSchema = createInsertSchema(gameRounds).pick({
   roundNumber: true,
   status: true,
   startTime: true,
+  endTime: true,
+  winningCardId: true,
+  totalPool: true,
 });
 
 // Types
