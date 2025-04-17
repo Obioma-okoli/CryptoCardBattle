@@ -166,20 +166,20 @@ export class DatabaseStorage implements IStorage {
     ];
     
     // Aggregate bets by card
-    const cardTotals = new Map<string, number>();
+    const cardTotals: Record<string, number> = {};
     
     for (const bet of roundBets) {
-      const currentTotal = cardTotals.get(bet.cardId) || 0;
-      cardTotals.set(bet.cardId, currentTotal + parseFloat(bet.amount));
+      const currentTotal = cardTotals[bet.cardId] || 0;
+      cardTotals[bet.cardId] = currentTotal + parseFloat(bet.amount);
     }
     
     // Update the result with totals
-    for (const [cardId, totalBet] of cardTotals.entries()) {
+    Object.entries(cardTotals).forEach(([cardId, totalBet]) => {
       const cardIndex = parseInt(cardId.split(" ")[1]) - 1;
       if (cardIndex >= 0 && cardIndex < result.length) {
         result[cardIndex].totalBets = totalBet.toString();
       }
-    }
+    });
     
     return result;
   }
@@ -207,19 +207,18 @@ export class DatabaseStorage implements IStorage {
   
   // Game result methods
   async getRecentResults(walletAddress?: string): Promise<any[]> {
-    // Get completed rounds with winners
+    // Get completed rounds
     const completedRounds = await db
       .select()
       .from(gameRounds)
-      .where(
-        and(
-          eq(gameRounds.status, "completed"),
-          // Ensure winningCardId is not null
-          eq(gameRounds.winningCardId != null, true)
-        )
-      )
+      .where(eq(gameRounds.status, "completed"))
       .orderBy(desc(gameRounds.roundNumber))
-      .limit(5);
+      .limit(10);
+      
+    // Filter rounds with winningCardId not null
+    const roundsWithWinners = completedRounds
+      .filter(round => round.winningCardId !== null)
+      .slice(0, 5);
     
     // Format results
     return Promise.all(completedRounds.map(async (round) => {

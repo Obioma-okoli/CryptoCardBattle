@@ -216,7 +216,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   };
   
   // Start game timer
-  let gameTimer: NodeJS.Timer;
+  let gameTimer: NodeJS.Timeout;
   
   const startGameTimer = async () => {
     // Initialize first round
