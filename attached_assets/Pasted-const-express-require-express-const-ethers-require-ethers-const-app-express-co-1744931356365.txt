@@ -1,0 +1,69 @@
+const express = require('express');
+const { ethers } = require('ethers');
+
+const app = express();
+const PORT = 3000;
+
+// Connect to Ethereum via Infura
+const provider = new ethers.providers.InfuraProvider('mainnet', 'YOUR_INFURA_API_KEY');
+
+// Store player bets and wallet addresses
+let game = {
+  card1: [],
+  card2: [],
+  timer: 1800, // 30 minutes in seconds
+  winner: null,
+};
+
+app.post('/place-bet', async (req, res) => {
+  const { playerId, card, amount, walletAddress } = req.body;
+
+  // Verify the transaction on-chain
+  const tx = await provider.getTransaction(req.body.txHash);
+  if (!tx || tx.value.lt(ethers.utils.parseEther(amount))) {
+    return res.status(400).send({ success: false, message: "Invalid transaction." });
+  }
+
+  // Add bet to the game
+  if (card === 'card1') game.card1.push({ playerId, amount, walletAddress });
+  else if (card === 'card2') game.card2.push({ playerId, amount, walletAddress });
+
+  res.send({ success: true });
+});
+
+app.get('/get-game-state', (req, res) => {
+  res.send(game);
+});
+
+setInterval(async () => {
+  if (game.timer > 0) game.timer--;
+  else {
+    const winner = Math.random() < 0.5 ? 'card1' : 'card2';
+    game.winner = winner;
+    distributeWinnings();
+  }
+}, 1000);
+
+function distributeWinnings() {
+  const totalPool = game.card1.reduce((sum, bet) => sum + parseFloat(bet.amount), 0) +
+                    game.card2.reduce((sum, bet) => sum + parseFloat(bet.amount), 0);
+  const platformFee = totalPool * 0.1;
+  const prizePool = totalPool - platformFee;
+  const winners = game[game.winner];
+
+  const totalWinningBets = winners.reduce((sum, bet) => sum + parseFloat(bet.amount), 0);
+
+  winners.forEach(async (bet) => {
+    const share = (parseFloat(bet.amount) / totalWinningBets) * prizePool;
+
+    // Send winnings to the winner's wallet
+    const wallet = new ethers.Wallet('YOUR_PRIVATE_KEY', provider);
+    const tx = await wallet.sendTransaction({
+      to: bet.walletAddress,
+      value: ethers.utils.parseEther(share.toString()),
+    });
+    console.log(`Sent ${share} ETH to ${bet.walletAddress}: ${tx.hash}`);
+  });
+}
+
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

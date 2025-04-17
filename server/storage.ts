@@ -26,6 +26,7 @@ export interface IStorage {
   
   // Game round methods
   getCurrentRound(): Promise<GameRound | undefined>;
+  getLatestCompletedRound(): Promise<GameRound | undefined>;
   createRound(round: InsertGameRound): Promise<GameRound>;
   updateRoundStatus(id: number, status: string): Promise<GameRound>;
   updateRoundWinner(id: number, winningCardId: string): Promise<GameRound>;
@@ -121,6 +122,15 @@ export class MemStorage implements IStorage {
     return Array.from(this.gameRounds.values()).find(
       (round) => round.status === "active",
     );
+  }
+  
+  async getLatestCompletedRound(): Promise<GameRound | undefined> {
+    // Find the latest completed round by round number
+    const completedRounds = Array.from(this.gameRounds.values())
+      .filter((round) => round.status === "completed")
+      .sort((a, b) => b.roundNumber - a.roundNumber);
+    
+    return completedRounds.length > 0 ? completedRounds[0] : undefined;
   }
   
   async createRound(round: InsertGameRound): Promise<GameRound> {
