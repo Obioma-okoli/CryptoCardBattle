@@ -112,7 +112,13 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.userIdCounter++;
-    const user: User = { ...insertUser, id };
+    // Ensure walletAddress is either string or null, not undefined
+    const user: User = { 
+      id,
+      username: insertUser.username,
+      password: insertUser.password,
+      walletAddress: insertUser.walletAddress || null
+    };
     this.users.set(id, user);
     return user;
   }
@@ -135,9 +141,12 @@ export class MemStorage implements IStorage {
   
   async createRound(round: InsertGameRound): Promise<GameRound> {
     const id = this.roundIdCounter++;
+    // Explicitly set all required fields to avoid type errors
     const gameRound: GameRound = { 
-      ...round, 
       id,
+      roundNumber: round.roundNumber,
+      status: round.status || "active", // Ensure status is not undefined
+      startTime: round.startTime || new Date(), // Ensure startTime is not undefined
       winningCardId: null,
       totalPool: "0",
       endTime: null,
@@ -226,12 +235,13 @@ export class MemStorage implements IStorage {
       { id: "Card 2", totalBets: "0" },
     ];
     
-    for (const [cardId, totalBet] of cardBets.entries()) {
+    // Convert Map to Array for ES5 compatibility
+    Array.from(cardBets.entries()).forEach(([cardId, totalBet]) => {
       const cardIndex = parseInt(cardId.split(" ")[1]) - 1;
       if (cardIndex >= 0 && cardIndex < result.length) {
         result[cardIndex].totalBets = totalBet.toString();
       }
-    }
+    });
     
     return result;
   }
@@ -245,11 +255,16 @@ export class MemStorage implements IStorage {
     metadata?: any;
   }): Promise<Transaction> {
     const id = this.transactionIdCounter++;
+    // Explicitly set all required fields
     const newTransaction: Transaction = { 
-      ...transaction, 
       id,
+      walletAddress: transaction.walletAddress,
+      type: transaction.type,
+      amount: transaction.amount,
+      txHash: transaction.txHash,
       userId: null,
       timestamp: new Date(),
+      metadata: transaction.metadata || {} // Ensure metadata is not undefined
     };
     this.transactions.set(id, newTransaction);
     return newTransaction;

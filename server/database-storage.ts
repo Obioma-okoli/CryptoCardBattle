@@ -192,14 +192,20 @@ export class DatabaseStorage implements IStorage {
     txHash: string;
     metadata?: any;
   }): Promise<Transaction> {
+    // Add required properties and ensure metadata is not null/undefined
+    const transactionData = {
+      userId: null,
+      walletAddress: transaction.walletAddress,
+      type: transaction.type,
+      amount: transaction.amount,
+      txHash: transaction.txHash,
+      timestamp: new Date(),
+      metadata: transaction.metadata || {} // Ensure metadata is not undefined
+    };
+    
     const [newTransaction] = await db
       .insert(transactions)
-      .values({
-        ...transaction,
-        userId: null,
-        timestamp: new Date(),
-        metadata: transaction.metadata || {} // Ensure metadata is not undefined
-      })
+      .values(transactionData)
       .returning();
     
     return newTransaction;
@@ -221,7 +227,7 @@ export class DatabaseStorage implements IStorage {
       .slice(0, 5);
     
     // Format results
-    return Promise.all(completedRounds.map(async (round) => {
+    return Promise.all(roundsWithWinners.map(async (round) => {
       let userWinnings = "0.00 ETH";
       
       if (walletAddress) {
