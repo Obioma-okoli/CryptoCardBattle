@@ -11,6 +11,7 @@ import { useWeb3 } from "@/lib/web3";
 // Card data type
 interface CardData {
   id: string;
+  emoji: string;
   totalBets: string;
   userBet: string;
   isWinner?: boolean;
@@ -34,6 +35,19 @@ interface GameResult {
 }
 
 export default function Game() {
+  // Emoji collection for cards
+  const emojiPool = [
+    "🦁", "🐯", "🐸", "🐼", "🦊", "🐺", "🐨", "🐮", "🐷", "🐙", 
+    "🦀", "🐝", "🦋", "🌟", "⚡", "🔥", "❄️", "🌈", "🎯", "🎲",
+    "💎", "👑", "🏆", "🎪", "🎨", "🎭", "🎵", "🎸", "🚀", "⭐"
+  ];
+
+  // Function to get random emojis for a new round
+  const getRandomEmojis = () => {
+    const shuffled = [...emojiPool].sort(() => Math.random() - 0.5);
+    return [shuffled[0], shuffled[1]];
+  };
+
   // Transaction modal state
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
   const [transactionData, setTransactionData] = useState<{
@@ -46,15 +60,18 @@ export default function Game() {
   const [gameState, setGameState] = useState<GameState>({
     status: 'active',
     round: 1,
-    timeRemaining: 165, // 2:45 in seconds
+    timeRemaining: 10, // Short timer for testing
     totalBets: '1.55 ETH',
   });
   
-  // Cards data
-  const [cards, setCards] = useState<CardData[]>([
-    { id: "Card 1", totalBets: "0.45 ETH", userBet: "0.00 ETH" },
-    { id: "Card 2", totalBets: "0.32 ETH", userBet: "0.00 ETH" },
-  ]);
+  // Initialize cards with random emojis
+  const [cards, setCards] = useState<CardData[]>(() => {
+    const [emoji1, emoji2] = getRandomEmojis();
+    return [
+      { id: "Card 1", emoji: emoji1, totalBets: "0.45 ETH", userBet: "0.00 ETH" },
+      { id: "Card 2", emoji: emoji2, totalBets: "0.32 ETH", userBet: "0.00 ETH" },
+    ];
+  });
   
   // Game history
   const [recentResults, setRecentResults] = useState<GameResult[]>([
@@ -93,7 +110,46 @@ export default function Game() {
           
           if (newTimeRemaining <= 0) {
             clearInterval(timer);
-            // End round logic would go here
+            
+            // Randomly pick a winning card
+            const winnerIndex = Math.floor(Math.random() * 2);
+            const winningCard = cards[winnerIndex];
+            
+            // Update cards to show the winner
+            setCards(prevCards => 
+              prevCards.map((card, index) => ({
+                ...card,
+                isWinner: index === winnerIndex
+              }))
+            );
+            
+            // Add result to history
+            const newResult: GameResult = {
+              round: prev.round,
+              winningCard: winningCard.emoji + " " + winningCard.id,
+              totalPool: prev.totalBets,
+              userWinnings: winningCard.userBet !== "0.00 ETH" ? "+0.25 ETH" : "0.00 ETH",
+              timestamp: "Just now"
+            };
+            
+            setRecentResults(prevResults => [newResult, ...prevResults.slice(0, 4)]);
+            
+            // Start new round after 3 seconds
+            setTimeout(() => {
+              const [emoji1, emoji2] = getRandomEmojis();
+              setCards([
+                { id: "Card 1", emoji: emoji1, totalBets: "0.00 ETH", userBet: "0.00 ETH" },
+                { id: "Card 2", emoji: emoji2, totalBets: "0.00 ETH", userBet: "0.00 ETH" },
+              ]);
+              
+              setGameState(prevState => ({
+                status: 'active',
+                round: prevState.round + 1,
+                timeRemaining: 10,
+                totalBets: '0.00 ETH'
+              }));
+            }, 3000);
+            
             return {
               ...prev,
               status: 'ended',
@@ -110,7 +166,7 @@ export default function Game() {
       
       return () => clearInterval(timer);
     }
-  }, [gameState.status]);
+  }, [gameState.status, cards]);
   
   // Format time remaining
   const formatTimeRemaining = (seconds: number) => {
@@ -170,6 +226,7 @@ export default function Game() {
             <Card 
               key={card.id}
               id={card.id}
+              emoji={card.emoji}
               totalBets={card.totalBets}
               userBet={card.userBet}
               isWinner={card.isWinner}
