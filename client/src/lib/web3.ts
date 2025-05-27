@@ -37,19 +37,43 @@ export const useWeb3 = () => React.useContext(Web3Context);
 
 // Simplified provider component
 export const Web3Provider: React.FC<{ children: React.ReactNode }> = (props) => {
+  const [isConnected, setIsConnected] = React.useState(false);
+  const [isConnecting, setIsConnecting] = React.useState(false);
+  const [address, setAddress] = React.useState<string | null>(null);
+  const [balance, setBalance] = React.useState<string | null>(null);
+
+  const connectWallet = async () => {
+    setIsConnecting(true);
+    // Simulate wallet connection
+    setTimeout(() => {
+      setAddress("0x1234...5678");
+      setBalance("1.5");
+      setIsConnected(true);
+      setIsConnecting(false);
+      console.log("Wallet connected successfully!");
+    }, 1500);
+  };
+
+  const disconnectWallet = () => {
+    setAddress(null);
+    setBalance(null);
+    setIsConnected(false);
+    console.log("Wallet disconnected");
+  };
+
   const contextValue: Web3ContextType = {
     provider: null,
     signer: null,
-    address: "0x1234...5678", // Mock address
-    balance: "1.5", // Mock balance
-    isConnected: true, // Mock connected state
-    isConnecting: false,
-    connectWallet: async () => { console.log("Connect wallet clicked"); },
+    address,
+    balance,
+    isConnected,
+    isConnecting,
+    connectWallet,
     placeBet: async (cardId, amount) => { 
       console.log(`Placing bet on ${cardId} with amount ${amount}`); 
       return true;
     },
-    disconnectWallet: () => { console.log("Disconnect wallet clicked"); }
+    disconnectWallet
   };
 
   return React.createElement(
