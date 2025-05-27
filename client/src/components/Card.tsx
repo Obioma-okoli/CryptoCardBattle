@@ -3,6 +3,7 @@ import { Slider } from "@/components/ui/slider";
 
 interface CardProps {
   id: string;
+  name: string;
   emoji: string;
   totalBets: string;
   userBet: string;
@@ -16,7 +17,7 @@ const cardImages = [
   "https://images.unsplash.com/photo-1641219541154-80334fe64494?auto=format&fit=crop&w=500&h=700"
 ];
 
-export default function Card({ id, emoji, totalBets, userBet, isWinner, onPlaceBet, disabled }: CardProps) {
+export default function Card({ id, name, emoji, totalBets, userBet, isWinner, onPlaceBet, disabled }: CardProps) {
   const [betAmount, setBetAmount] = useState("0.05");
   
   // Get card index for image
@@ -30,9 +31,9 @@ export default function Card({ id, emoji, totalBets, userBet, isWinner, onPlaceB
   return (
     <div className="card relative overflow-hidden rounded-xl border border-gray-700 bg-card hover:bg-card-hover transition-all duration-200 shadow-lg">
       <div className="aspect-[3/4] relative overflow-hidden">
-        {/* Card Identifier Badge */}
-        <div className="absolute top-3 left-3 bg-background/80 backdrop-blur rounded-lg py-1 px-3 font-semibold">
-          <span>{id}</span>
+        {/* Card Name Badge */}
+        <div className="absolute top-3 left-3 bg-background/80 backdrop-blur rounded-lg py-1 px-3 font-bold text-lg">
+          <span>{name}</span>
         </div>
         
         {/* Card Emoji */}

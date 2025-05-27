@@ -11,6 +11,7 @@ import { useWeb3 } from "@/lib/web3";
 // Card data type
 interface CardData {
   id: string;
+  name: string;
   emoji: string;
   totalBets: string;
   userBet: string;
@@ -35,11 +36,38 @@ interface GameResult {
 }
 
 export default function Game() {
-  // Emoji collection for cards
+  // Emoji collection for cards with fun names
   const emojiPool = [
-    "🦁", "🐯", "🐸", "🐼", "🦊", "🐺", "🐨", "🐮", "🐷", "🐙", 
-    "🦀", "🐝", "🦋", "🌟", "⚡", "🔥", "❄️", "🌈", "🎯", "🎲",
-    "💎", "👑", "🏆", "🎪", "🎨", "🎭", "🎵", "🎸", "🚀", "⭐"
+    { emoji: "🦁", name: "ROARY" },
+    { emoji: "🐯", name: "STRIPES" },
+    { emoji: "🐸", name: "HOPPY" },
+    { emoji: "🐼", name: "BAMBOO" },
+    { emoji: "🦊", name: "FOXY" },
+    { emoji: "🐺", name: "HOWLY" },
+    { emoji: "🐨", name: "KOALY" },
+    { emoji: "🐮", name: "MOOZY" },
+    { emoji: "🐷", name: "OINKY" },
+    { emoji: "🐙", name: "TENTIE" },
+    { emoji: "🦀", name: "CLAWS" },
+    { emoji: "🐝", name: "BUZZY" },
+    { emoji: "🦋", name: "FLUTTR" },
+    { emoji: "🌟", name: "SHINE" },
+    { emoji: "⚡", name: "ZAPPY" },
+    { emoji: "🔥", name: "BLAZE" },
+    { emoji: "❄️", name: "FROSTY" },
+    { emoji: "🌈", name: "PRISM" },
+    { emoji: "🎯", name: "BULLS" },
+    { emoji: "🎲", name: "DICEY" },
+    { emoji: "💎", name: "BLING" },
+    { emoji: "👑", name: "ROYAL" },
+    { emoji: "🏆", name: "CHAMP" },
+    { emoji: "🎪", name: "CIRCUS" },
+    { emoji: "🎨", name: "ARTSY" },
+    { emoji: "🎭", name: "DRAMA" },
+    { emoji: "🎵", name: "MELODY" },
+    { emoji: "🎸", name: "ROCKY" },
+    { emoji: "🚀", name: "BLAST" },
+    { emoji: "⭐", name: "STAR" }
   ];
 
   // Function to get random emojis for a new round
@@ -66,10 +94,10 @@ export default function Game() {
   
   // Initialize cards with random emojis
   const [cards, setCards] = useState<CardData[]>(() => {
-    const [emoji1, emoji2] = getRandomEmojis();
+    const [emojiData1, emojiData2] = getRandomEmojis();
     return [
-      { id: "Card 1", emoji: emoji1, totalBets: "0.45 ETH", userBet: "0.00 ETH" },
-      { id: "Card 2", emoji: emoji2, totalBets: "0.32 ETH", userBet: "0.00 ETH" },
+      { id: "1", name: emojiData1.name, emoji: emojiData1.emoji, totalBets: "0.45 ETH", userBet: "0.00 ETH" },
+      { id: "2", name: emojiData2.name, emoji: emojiData2.emoji, totalBets: "0.32 ETH", userBet: "0.00 ETH" },
     ];
   });
   
@@ -126,7 +154,7 @@ export default function Game() {
             // Add result to history
             const newResult: GameResult = {
               round: prev.round,
-              winningCard: winningCard.emoji + " " + winningCard.id,
+              winningCard: winningCard.emoji + " " + winningCard.name,
               totalPool: prev.totalBets,
               userWinnings: winningCard.userBet !== "0.00 ETH" ? "+0.25 ETH" : "0.00 ETH",
               timestamp: "Just now"
@@ -136,10 +164,10 @@ export default function Game() {
             
             // Start new round after 3 seconds
             setTimeout(() => {
-              const [emoji1, emoji2] = getRandomEmojis();
+              const [emojiData1, emojiData2] = getRandomEmojis();
               setCards([
-                { id: "Card 1", emoji: emoji1, totalBets: "0.00 ETH", userBet: "0.00 ETH" },
-                { id: "Card 2", emoji: emoji2, totalBets: "0.00 ETH", userBet: "0.00 ETH" },
+                { id: "1", name: emojiData1.name, emoji: emojiData1.emoji, totalBets: "0.00 ETH", userBet: "0.00 ETH" },
+                { id: "2", name: emojiData2.name, emoji: emojiData2.emoji, totalBets: "0.00 ETH", userBet: "0.00 ETH" },
               ]);
               
               setGameState(prevState => ({
@@ -226,6 +254,7 @@ export default function Game() {
             <Card 
               key={card.id}
               id={card.id}
+              name={card.name}
               emoji={card.emoji}
               totalBets={card.totalBets}
               userBet={card.userBet}
