@@ -18,7 +18,9 @@ export default function GameStatus({ round, timeRemaining, totalBets }: GameStat
         <div className="flex items-center gap-4">
           <div className="bg-black/30 rounded-xl px-6 py-3 border border-gray-700">
             <span className="text-xs text-gray-400 block mb-1">Time Remaining</span>
-            <span className="text-2xl font-mono font-bold text-yellow-500">{timeRemaining}</span>
+            <span className={`text-2xl font-mono font-bold ${
+              parseInt(timeRemaining.split(':')[0]) < 1 ? 'text-red-500' : 'text-yellow-500'
+            }`}>{timeRemaining}</span>
           </div>
           
           <div className="bg-black/30 rounded-xl px-6 py-3 border border-gray-700">

@@ -64,11 +64,11 @@ export default function Game() {
     hash?: string;
   } | null>(null);
   
-  // Game state with 30 minute timer (1800 seconds)
+  // Game state with 10 minute timer (600 seconds)
   const [gameState, setGameState] = useState<GameState>({
     status: 'active',
     round: 1,
-    timeRemaining: 1800,
+    timeRemaining: 600,
     totalBets: '0.00 USDT',
   });
   
@@ -88,21 +88,21 @@ export default function Game() {
       winningCard: "Card 2", 
       totalPool: "1000.00 USDT", 
       userWinnings: "+125.50 USDT", 
-      timestamp: "5 min ago" 
+      timestamp: "2 min ago" 
     },
     { 
       round: 23, 
       winningCard: "Card 1", 
       totalPool: "750.00 USDT", 
       userWinnings: "0.00 USDT", 
-      timestamp: "35 min ago" 
+      timestamp: "12 min ago" 
     },
     { 
       round: 22, 
       winningCard: "Card 2", 
       totalPool: "1250.00 USDT", 
       userWinnings: "+180.25 USDT", 
-      timestamp: "1 hour ago" 
+      timestamp: "22 min ago" 
     }
   ]);
   
@@ -153,7 +153,7 @@ export default function Game() {
               setGameState(prevState => ({
                 status: 'active',
                 round: prevState.round + 1,
-                timeRemaining: 1800,
+                timeRemaining: 600, // Reset to 10 minutes
                 totalBets: '0.00 USDT'
               }));
             }, 5000);
