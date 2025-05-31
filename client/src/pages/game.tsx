@@ -36,43 +36,23 @@ interface GameResult {
 }
 
 export default function Game() {
-  // Emoji collection for cards with fun names
-  const emojiPool = [
-    { emoji: "🦁", name: "ROARY" },
-    { emoji: "🐯", name: "STRIPES" },
-    { emoji: "🐸", name: "HOPPY" },
-    { emoji: "🐼", name: "BAMBOO" },
-    { emoji: "🦊", name: "FOXY" },
-    { emoji: "🐺", name: "HOWLY" },
-    { emoji: "🐨", name: "KOALY" },
-    { emoji: "🐮", name: "MOOZY" },
-    { emoji: "🐷", name: "OINKY" },
-    { emoji: "🐙", name: "TENTIE" },
-    { emoji: "🦀", name: "CLAWS" },
-    { emoji: "🐝", name: "BUZZY" },
-    { emoji: "🦋", name: "FLUTTR" },
-    { emoji: "🌟", name: "SHINE" },
-    { emoji: "⚡", name: "ZAPPY" },
-    { emoji: "🔥", name: "BLAZE" },
-    { emoji: "❄️", name: "FROSTY" },
-    { emoji: "🌈", name: "PRISM" },
-    { emoji: "🎯", name: "BULLS" },
-    { emoji: "🎲", name: "DICEY" },
-    { emoji: "💎", name: "BLING" },
-    { emoji: "👑", name: "ROYAL" },
-    { emoji: "🏆", name: "CHAMP" },
-    { emoji: "🎪", name: "CIRCUS" },
-    { emoji: "🎨", name: "ARTSY" },
-    { emoji: "🎭", name: "DRAMA" },
-    { emoji: "🎵", name: "MELODY" },
-    { emoji: "🎸", name: "ROCKY" },
-    { emoji: "🚀", name: "BLAST" },
-    { emoji: "⭐", name: "STAR" }
+  // Modern, fun card themes
+  const cardThemes = [
+    { emoji: "🌙", name: "LUNAR" },
+    { emoji: "☀️", name: "SOLAR" },
+    { emoji: "🌊", name: "WAVE" },
+    { emoji: "🔥", name: "FLAME" },
+    { emoji: "⚡", name: "VOLT" },
+    { emoji: "🌿", name: "LEAF" },
+    { emoji: "💎", name: "GEM" },
+    { emoji: "⭐", name: "STAR" },
+    { emoji: "🎯", name: "TARGET" },
+    { emoji: "🎲", name: "CHANCE" }
   ];
 
-  // Function to get random emojis for a new round
-  const getRandomEmojis = () => {
-    const shuffled = [...emojiPool].sort(() => Math.random() - 0.5);
+  // Get random card themes for a new round
+  const getRandomThemes = () => {
+    const shuffled = [...cardThemes].sort(() => Math.random() - 0.5);
     return [shuffled[0], shuffled[1]];
   };
 
@@ -84,20 +64,20 @@ export default function Game() {
     hash?: string;
   } | null>(null);
   
-  // Game state
+  // Game state with 30 minute timer (1800 seconds)
   const [gameState, setGameState] = useState<GameState>({
     status: 'active',
     round: 1,
-    timeRemaining: 10, // Short timer for testing
-    totalBets: '1.55 ETH',
+    timeRemaining: 1800,
+    totalBets: '0.00 USDT',
   });
   
-  // Initialize cards with random emojis
+  // Initialize cards with random themes
   const [cards, setCards] = useState<CardData[]>(() => {
-    const [emojiData1, emojiData2] = getRandomEmojis();
+    const [theme1, theme2] = getRandomThemes();
     return [
-      { id: "1", name: emojiData1.name, emoji: emojiData1.emoji, totalBets: "0.45 ETH", userBet: "0.00 ETH" },
-      { id: "2", name: emojiData2.name, emoji: emojiData2.emoji, totalBets: "0.32 ETH", userBet: "0.00 ETH" },
+      { id: "1", name: theme1.name, emoji: theme1.emoji, totalBets: "0.00 USDT", userBet: "0.00 USDT" },
+      { id: "2", name: theme2.name, emoji: theme2.emoji, totalBets: "0.00 USDT", userBet: "0.00 USDT" },
     ];
   });
   
@@ -106,27 +86,27 @@ export default function Game() {
     { 
       round: 24, 
       winningCard: "Card 2", 
-      totalPool: "1.55 ETH", 
-      userWinnings: "+0.12 ETH", 
+      totalPool: "1000.00 USDT", 
+      userWinnings: "+125.50 USDT", 
       timestamp: "5 min ago" 
     },
     { 
       round: 23, 
       winningCard: "Card 1", 
-      totalPool: "2.13 ETH", 
-      userWinnings: "0.00 ETH", 
-      timestamp: "12 min ago" 
+      totalPool: "750.00 USDT", 
+      userWinnings: "0.00 USDT", 
+      timestamp: "35 min ago" 
     },
     { 
       round: 22, 
       winningCard: "Card 2", 
-      totalPool: "1.87 ETH", 
-      userWinnings: "+0.32 ETH", 
-      timestamp: "18 min ago" 
+      totalPool: "1250.00 USDT", 
+      userWinnings: "+180.25 USDT", 
+      timestamp: "1 hour ago" 
     }
   ]);
   
-  // Web3 context
+  // Web3 context for handling transactions
   const { placeBet, isConnected } = useWeb3();
   
   // Timer effect
@@ -143,7 +123,7 @@ export default function Game() {
             const winnerIndex = Math.floor(Math.random() * 2);
             const winningCard = cards[winnerIndex];
             
-            // Update cards to show the winner
+            // Update cards to show winner
             setCards(prevCards => 
               prevCards.map((card, index) => ({
                 ...card,
@@ -156,27 +136,27 @@ export default function Game() {
               round: prev.round,
               winningCard: winningCard.emoji + " " + winningCard.name,
               totalPool: prev.totalBets,
-              userWinnings: winningCard.userBet !== "0.00 ETH" ? "+0.25 ETH" : "0.00 ETH",
+              userWinnings: winningCard.userBet !== "0.00 USDT" ? "+125.50 USDT" : "0.00 USDT",
               timestamp: "Just now"
             };
             
             setRecentResults(prevResults => [newResult, ...prevResults.slice(0, 4)]);
             
-            // Start new round after 3 seconds
+            // Start new round after 5 seconds
             setTimeout(() => {
-              const [emojiData1, emojiData2] = getRandomEmojis();
+              const [theme1, theme2] = getRandomThemes();
               setCards([
-                { id: "1", name: emojiData1.name, emoji: emojiData1.emoji, totalBets: "0.00 ETH", userBet: "0.00 ETH" },
-                { id: "2", name: emojiData2.name, emoji: emojiData2.emoji, totalBets: "0.00 ETH", userBet: "0.00 ETH" },
+                { id: "1", name: theme1.name, emoji: theme1.emoji, totalBets: "0.00 USDT", userBet: "0.00 USDT" },
+                { id: "2", name: theme2.name, emoji: theme2.emoji, totalBets: "0.00 USDT", userBet: "0.00 USDT" },
               ]);
               
               setGameState(prevState => ({
                 status: 'active',
                 round: prevState.round + 1,
-                timeRemaining: 10,
-                totalBets: '0.00 ETH'
+                timeRemaining: 1800,
+                totalBets: '0.00 USDT'
               }));
-            }, 3000);
+            }, 5000);
             
             return {
               ...prev,
@@ -196,7 +176,7 @@ export default function Game() {
     }
   }, [gameState.status, cards]);
   
-  // Format time remaining
+  // Format time remaining in MM:SS format
   const formatTimeRemaining = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
@@ -205,51 +185,47 @@ export default function Game() {
   
   // Handle placing bet
   const handlePlaceBet = async (cardId: string, amount: string) => {
-    // Open transaction modal
     setTransactionData({ cardId, amount });
     setIsTransactionModalOpen(true);
     
-    // Place bet
     const success = await placeBet(cardId, amount);
     
-    // Close modal
     setIsTransactionModalOpen(false);
     setTransactionData(null);
     
-    // Update card data if successful
     if (success) {
       setCards(prev => 
         prev.map(card => 
           card.id === cardId 
             ? { 
                 ...card, 
-                userBet: `${amount} ETH`,
-                totalBets: `${parseFloat(card.totalBets) + parseFloat(amount)} ETH`
+                userBet: `${amount} USDT`,
+                totalBets: `${(parseFloat(card.totalBets) + parseFloat(amount)).toFixed(2)} USDT`
               } 
             : card
         )
       );
+      
+      // Update total pool
+      setGameState(prev => ({
+        ...prev,
+        totalBets: `${(parseFloat(prev.totalBets) + parseFloat(amount)).toFixed(2)} USDT`
+      }));
     }
   };
   
-  // Fetch game data from API
-  const { data: gameData } = useQuery({
-    queryKey: ['/api/game-state'],
-    enabled: false, // Disabled for now, would be enabled in production
-  });
-  
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground">
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white">
       <Header />
       
-      <main className="flex-grow container mx-auto px-4 py-8">
+      <main className="flex-grow container mx-auto px-4 py-6">
         <GameStatus 
           round={gameState.round} 
           timeRemaining={formatTimeRemaining(gameState.timeRemaining)} 
           totalBets={gameState.totalBets} 
         />
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
           {cards.map((card) => (
             <Card 
               key={card.id}

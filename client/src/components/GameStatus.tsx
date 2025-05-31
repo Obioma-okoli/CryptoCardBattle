@@ -6,24 +6,24 @@ interface GameStatusProps {
 
 export default function GameStatus({ round, timeRemaining, totalBets }: GameStatusProps) {
   return (
-    <div className="mb-8 bg-card rounded-xl p-4 shadow-lg border border-gray-700">
-      <div className="flex flex-col sm:flex-row justify-between items-center">
-        <div className="mb-4 sm:mb-0">
-          <h2 className="text-lg font-semibold">
-            Current Round: <span className="text-accent">{round}</span>
+    <div className="mb-8 bg-black/30 backdrop-blur-md rounded-xl p-6 border border-gray-700 shadow-lg">
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div>
+          <h2 className="text-2xl font-bold mb-1">
+            Round <span className="text-blue-500">#{round}</span>
           </h2>
-          <p className="text-muted-foreground text-sm">Choose a card to place your bet</p>
+          <p className="text-gray-400">Choose your winning card and place your bet</p>
         </div>
         
-        <div className="flex items-center space-x-3">
-          <div className="bg-accent/10 rounded-lg px-3 py-2 border border-gray-700">
-            <span className="text-xs text-muted-foreground block">Time Remaining</span>
-            <span className="text-lg font-mono font-semibold text-warning">{timeRemaining}</span>
+        <div className="flex items-center gap-4">
+          <div className="bg-black/30 rounded-xl px-6 py-3 border border-gray-700">
+            <span className="text-xs text-gray-400 block mb-1">Time Remaining</span>
+            <span className="text-2xl font-mono font-bold text-yellow-500">{timeRemaining}</span>
           </div>
           
-          <div className="bg-accent/10 rounded-lg px-3 py-2 border border-gray-700">
-            <span className="text-xs text-muted-foreground block">Total Bets</span>
-            <span className="text-lg font-mono font-semibold">{totalBets}</span>
+          <div className="bg-black/30 rounded-xl px-6 py-3 border border-gray-700">
+            <span className="text-xs text-gray-400 block mb-1">Total Pool</span>
+            <span className="text-2xl font-mono font-bold text-green-500">{totalBets}</span>
           </div>
         </div>
       </div>

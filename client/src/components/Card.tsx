@@ -12,68 +12,63 @@ interface CardProps {
   disabled: boolean;
 }
 
-const cardImages = [
-  "https://images.unsplash.com/photo-1641219539648-5d878db818be?auto=format&fit=crop&w=500&h=700",
-  "https://images.unsplash.com/photo-1641219541154-80334fe64494?auto=format&fit=crop&w=500&h=700"
-];
-
 export default function Card({ id, name, emoji, totalBets, userBet, isWinner, onPlaceBet, disabled }: CardProps) {
-  const [betAmount, setBetAmount] = useState("0.05");
+  const [betAmount, setBetAmount] = useState("10.00");
   
-  // Get card index for image
-  const cardIndex = parseInt(id.split(" ")[1]) - 1;
-  
-  // Handle slider change
   const handleSliderChange = (value: number[]) => {
-    setBetAmount(value[0].toString());
+    setBetAmount(value[0].toFixed(2));
   };
   
   return (
-    <div className="card relative overflow-hidden rounded-xl border border-gray-700 bg-card hover:bg-card-hover transition-all duration-200 shadow-lg">
-      <div className="aspect-[3/4] relative overflow-hidden">
+    <div className={`relative overflow-hidden rounded-2xl border-2 transition-all duration-300 ${
+      isWinner 
+        ? 'border-green-500 shadow-[0_0_30px_rgba(34,197,94,0.3)]' 
+        : 'border-gray-700 hover:border-gray-600'
+    }`}>
+      <div className="aspect-[3/4] relative overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900">
         {/* Card Name Badge */}
-        <div className="absolute top-3 left-3 bg-background/80 backdrop-blur rounded-lg py-1 px-3 font-bold text-lg">
+        <div className="absolute top-4 left-4 bg-black/50 backdrop-blur-md rounded-lg py-2 px-4 font-bold text-lg">
           <span>{name}</span>
         </div>
         
         {/* Card Emoji */}
-        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10">
+        <div className="w-full h-full flex items-center justify-center">
           <div className="text-9xl animate-pulse">
             {emoji}
           </div>
         </div>
         
-        {/* Bet Amount Indicator */}
-        <div className="absolute top-3 right-3 bg-primary text-white rounded-lg py-1 px-2 font-medium text-sm flex items-center">
-          <span className="material-icons text-xs mr-1">groups</span>
+        {/* Total Bets Badge */}
+        <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-md rounded-lg py-2 px-4 font-medium text-sm flex items-center">
+          <span className="material-icons text-xs mr-2">groups</span>
           <span>{totalBets}</span>
         </div>
         
         {/* Winner Overlay */}
         {isWinner && (
-          <div className="absolute inset-0 bg-success/20 backdrop-blur-sm flex items-center justify-center">
-            <div className="bg-success text-white px-6 py-3 rounded-xl font-bold text-xl shadow-lg flex items-center">
-              <span className="material-icons mr-2">emoji_events</span> WINNER
+          <div className="absolute inset-0 bg-green-500/20 backdrop-blur-sm flex items-center justify-center">
+            <div className="bg-green-500 text-white px-8 py-4 rounded-xl font-bold text-2xl shadow-lg flex items-center">
+              <span className="material-icons mr-3">emoji_events</span> WINNER
             </div>
           </div>
         )}
       </div>
       
       {/* Betting Controls */}
-      <div className="p-4 border-t border-gray-700">
-        <h3 className="text-lg font-semibold mb-3">Place Your Bet</h3>
+      <div className="p-6 border-t border-gray-700 bg-gray-900/50 backdrop-blur-md">
+        <h3 className="text-lg font-semibold mb-4">Place Your Bet</h3>
         
         {/* Bet Slider */}
-        <div className="mb-4">
-          <div className="flex justify-between text-xs text-muted-foreground mb-1">
-            <span>0.01 ETH</span>
-            <span>1.0 ETH</span>
+        <div className="mb-6">
+          <div className="flex justify-between text-xs text-gray-400 mb-2">
+            <span>10 USDT</span>
+            <span>1000 USDT</span>
           </div>
           <Slider
-            defaultValue={[0.05]}
-            min={0.01}
-            max={1}
-            step={0.01}
+            defaultValue={[10]}
+            min={10}
+            max={1000}
+            step={10}
             onValueChange={handleSliderChange}
             disabled={disabled}
           />
@@ -81,16 +76,16 @@ export default function Card({ id, name, emoji, totalBets, userBet, isWinner, on
         
         {/* Bet Amount and Button */}
         <div className="flex items-center justify-between">
-          <div className="bg-accent/10 rounded-lg px-3 py-2 border border-gray-700 w-1/2">
-            <span className="text-xs text-muted-foreground block">Bet Amount</span>
+          <div className="bg-black/30 rounded-lg px-4 py-3 border border-gray-700">
+            <span className="text-xs text-gray-400 block">Bet Amount</span>
             <div className="flex items-center">
-              <span className="text-lg font-mono font-semibold">{betAmount}</span>
-              <span className="ml-1 text-muted-foreground">ETH</span>
+              <span className="text-xl font-mono font-semibold">{betAmount}</span>
+              <span className="ml-2 text-gray-400">USDT</span>
             </div>
           </div>
           
           <button
-            className={`bg-accent hover:bg-accent/90 text-white font-medium rounded-lg px-4 py-2 transition-colors ${
+            className={`bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg px-6 py-3 transition-colors ${
               disabled ? 'opacity-50 cursor-not-allowed' : ''
             }`}
             onClick={() => onPlaceBet(id, betAmount)}
@@ -101,9 +96,9 @@ export default function Card({ id, name, emoji, totalBets, userBet, isWinner, on
         </div>
         
         {/* User Bet Info */}
-        <div className="mt-4 pt-3 border-t border-gray-700">
+        <div className="mt-4 pt-4 border-t border-gray-700">
           <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">Your Bet:</span>
+            <span className="text-sm text-gray-400">Your Bet:</span>
             <span className="font-mono font-medium">{userBet}</span>
           </div>
         </div>
